@@ -180,10 +180,10 @@ class PatchEmbedding(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        # do patching
+        # do patching  x: [batch_size, feature_size, seq_len]
         n_vars = x.shape[1]
-        x = self.padding_patch_layer(x)
-        x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)
+        x = self.padding_patch_layer(x) # [batch_size, feature_size, seq_len+padding]
+        x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride) #  [batch_size, feature_size, (seq_len+padding) / stride, patch_len]
         x = torch.reshape(x, (x.shape[0] * x.shape[1], x.shape[2], x.shape[3]))
         # Input encoding
         x = self.value_embedding(x) + self.position_embedding(x)
